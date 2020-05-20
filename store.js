@@ -9,7 +9,8 @@ Vue.use(Vuex)
 export function createStore() {
   return new Vuex.Store({
     state: {
-      items: {}
+      items: {},
+      asyncDataRuns: []
     },
     actions: {
       fetchItem({
@@ -32,6 +33,11 @@ export function createStore() {
         item
       }) {
         Vue.set(state.items, id, item)
+      },
+      setAsyncDataRun(state, {
+        name
+      }) {
+        state.asyncDataRuns.push(name)
       }
     }
   })

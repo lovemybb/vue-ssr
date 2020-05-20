@@ -4,7 +4,6 @@ const express = require('express')
 // const favicon = require('serve-favicon') // icon图标
 const compression = require('compression') // 开启gzip压缩
 const resolve = file => path.resolve(__dirname, file)
-// const proxy = require('http-proxy-middleware');//引入代理中间件
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -16,8 +15,7 @@ function createRenderer(bundle, template, clientManifest) {
         runInNewContext: false, // 推荐
         template,
         // 缓存
-        clientManifest
-
+        clientManifest,
     })
 }
 
@@ -63,18 +61,14 @@ function startServer() {
     // app.use(favicon('./public/logo-48.png')) // icon
     app.use('/dist', serve('./dist', true)) // 静态资源
     app.use('/public', serve('./public', true)) // 静态资源 （如：http://localhost:8080/public/logo-120.png）
-    app.use('/manifest.json', serve('./manifest.json', true))
 
     app.get('*', (req, res) => {
         // 未渲染好返回
         if (!renderer) {
             return res.end('waiting for compilation... refresh in a moment.')
         }
-
         const s = Date.now()
-
         res.setHeader("Content-Type", "text/html")
-
         const errorHandler = err => {
             if (err && err.code === 404) {
                 console.log(404)
@@ -86,9 +80,7 @@ function startServer() {
                 console.error(err)
             }
         }
-
         var title = 'cnodeJs' // 自定义变量（此处用于title）
-
         renderer.renderToStream({
                 title,
                 url: req.url
