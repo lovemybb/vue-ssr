@@ -7,6 +7,7 @@ const serverConfig = require('./webpack.server.config')
 module.exports = function setupDevServer(app, cb) {
     let bundle
     let template
+    let manifest
 
     // 修改客户端配置添加 热更新中间件
     clientConfig.entry = ['webpack-hot-middleware/client', clientConfig.entry]
@@ -30,16 +31,30 @@ module.exports = function setupDevServer(app, cb) {
     clientCompiler.plugin('done', () => {
         const fs = devMiddleware.fileSystem
         console.log('clientConfig.output.path', clientConfig.output.path)
-        const filePath = path.join(clientConfig.output.path, 'index.html') // 模板为打包后的html文件
-        if (fs.existsSync(filePath)) {
-            template = fs.readFileSync(filePath, 'utf-8')
+        try {
+            const filePath = path.join(__dirname, '../index.html') // 模板为打包后的html文件
+            const manifestPath = path.join(clientConfig.output.path, 'vue-ssr-client-manifest.json') // 模板为打包后的html文件
+            console.log('clientConfig.output.path2', filePath, fs.existsSync(filePath))
+            if (fs.existsSync(filePath)) {
+                console.log('clientConfig.output.pat3', clientConfig.output.path)
 
-            console.log(4444444444, template)
-            if (bundle) {
-                console.log(55555555)
-                cb(bundle, template)
+                template = fs.readFileSync(filePath, 'utf-8')
+                manifest = fs.readFileSync(manifestPath, 'utf-8')
+
+                console.log(4444444444, template)
+                if (bundle) {
+                    console.log(55555555)
+                    cb(bundle, template, manifest)
+                } else {
+                    console.error("bundle", 'not exists')
+                }
+            } else {
+                console.error("filePath", filePath, 'not exists')
             }
+        } catch (error) {
+            console.error(error)
         }
+
     })
 
     // HOT Middleware
@@ -61,7 +76,9 @@ module.exports = function setupDevServer(app, cb) {
         console.log(3333333333)
         if (template) {
             console.log(2222222222)
-            cb(bundle, template)
+            cb(bundle, template, manifest)
+        } else {
+            console.error("template", 'not exists')
         }
     })
 }
