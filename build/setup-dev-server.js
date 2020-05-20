@@ -7,6 +7,7 @@ const serverConfig = require('./webpack.server.config')
 module.exports = function setupDevServer(app, cb) {
     let bundle
     let template
+    let clientManifest
 
     // 修改客户端配置添加 热更新中间件
     clientConfig.entry.app = ['webpack-hot-middleware/client', clientConfig.entry.app]
@@ -30,12 +31,14 @@ module.exports = function setupDevServer(app, cb) {
     clientCompiler.plugin('done', () => {
         const fs = devMiddleware.fileSystem
         const filePath = path.join(clientConfig.output.path, 'index.html') // 模板为打包后的html文件
+        const clientManifestPath = path.join(clientConfig.output.path, 'vue-ssr-client-manifest.json') // 模板为打包后的html文件
         if (fs.existsSync(filePath)) {
             template = fs.readFileSync(filePath, 'utf-8')
+            clientManifest = JSON.parse(fs.readFileSync(clientManifestPath, 'utf-8'))
             console.log(4444444444)
             if (bundle) {
                 console.log(1111111111)
-                cb(bundle, template)
+                cb(bundle, template, clientManifest)
             }
         }
     })
@@ -59,7 +62,7 @@ module.exports = function setupDevServer(app, cb) {
         console.log(3333333333)
         if (template) {
             console.log(2222222222)
-            cb(bundle, template)
+            cb(bundle, template, clientManifest)
         }
     })
 }

@@ -1,6 +1,6 @@
 <!-- Item.vue -->
 <template>
-  <div>{{ item.title }}</div>
+  <div>unit</div>
 </template>
 
 <script>
