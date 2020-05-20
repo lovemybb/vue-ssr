@@ -59,10 +59,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
+        use: isProduction ? ExtractTextPlugin.extract({
           fallback: "style-loader",
           use: "css-loader"
-        })
+        }) : ['vue-style-loader', 'css-loader']
       }
     ]
   },

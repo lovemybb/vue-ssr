@@ -32,27 +32,25 @@ if (isProd) {
         const template = fs.readFileSync(resolve('./index.html'), 'utf-8')
         const clientManifest = require('./dist/vue-ssr-client-manifest.json')
         renderer = createRenderer(serverBundle, template, clientManifest)
-        startServer()
+        return startServer()
     } catch (error) {
         console.log(error, 'error prod')
     }
+    return
 } else {
-    console.log('renderer=========================')
 
     // 开发模式需要设置 dev-server 和 hot-reload
     // 创建一个新renderer更新模板
-    require('./build/setup-dev-server')(app, (bundle, template) => {
-        console.log('renderer=========================')
+    require('./build/setup-dev-server')(app, (bundle, template, manifest) => {
         try {
-            renderer = createRenderer(bundle, template)
-            startServer()
+            renderer = createRenderer(bundle, template, manifest)
         } catch (error) {
             console.log(error)
         }
-        console.log('renderer=========================')
     })
-
 }
+startServer()
+
 
 function startServer() {
     const serve = (path, cache) => express.static(resolve(path), {

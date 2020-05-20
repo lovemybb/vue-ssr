@@ -2,15 +2,27 @@ const merge = require('webpack-merge')
 const baseConfig = require('./webpack.base.config.js')
 const VueSSRClientPlugin = require('vue-server-renderer/client-plugin')
 const HTMLPlugin = require('html-webpack-plugin')
+const CopyPlugin = require('copy-webpack-plugin');
+const isProduction = process.env.NODE_ENV === 'production'
 
 module.exports = merge(baseConfig, {
     entry: './entry-client.js',
-    plugins: [
+    plugins: isProduction ? [
         // 此插件在输出目录中
         // 生成 `vue-ssr-client-manifest.json`。
         new VueSSRClientPlugin(),
         new HTMLPlugin({
-            template: 'index.html'
+            template: 'index.html',
+        })
+
+    ] : [ // 此插件在输出目录中
+        // 生成 `vue-ssr-client-manifest.json`。
+        new VueSSRClientPlugin(),
+        new CopyPlugin({
+            patterns: [{
+                from: 'index.html',
+                to: 'index.html'
+            }]
         })
     ],
     optimization: {
